@@ -2,7 +2,7 @@
 
 import random
 import sys
-
+from api_pb2 import Interpretation
 
 def parse(cnf):
     lit_clause = {}
