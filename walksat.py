@@ -6,20 +6,21 @@ import sys
 
 def parse(cnf):
     lit_clause = {}
-    clauses = cnf
+    clauses = []
     count = 0
     n_vars = 0
-    for clause in cnf:
-        for literal in clause:
+    for clause in cnf.clause:
+        c_list = []
+        for literal in clause.literal:
+            c_list.append(literal)
             if literal in lit_clause and count not in lit_clause[literal]:
                 lit_clause[literal].append(count)
             else:
                 lit_clause.update({literal: [count]})
                 if n_vars< abs(literal): n_vars = abs(literal)
-
+        clauses.append(c_list)
         count += 1
     return clauses, n_vars, [literal if literal is not None else [] for literal in lit_clause.values()]
-
 
 def get_random_interpretation(n_vars):
     return [i if random.random() < 0.5 else -i for i in range(n_vars + 1)]
@@ -91,4 +92,7 @@ def run_sat(clauses, n_vars, lit_clause, max_flips_proportion=4):
 
 def ok(cnf):
     clauses, n_vars, lit_clause = parse(cnf)
-    return run_sat(clauses, n_vars, lit_clause)
+    solution = run_sat(clauses, n_vars, lit_clause)
+    interpretation = Interpretation()
+    interpretation.variable.extend(solution)
+    return interpretation

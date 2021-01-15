@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package api;
+
+message Clause {
+    repeated int32 literal = 1;
+}
+
+message Cnf {
+    repeated Clause clause = 1;
+}
+
+message Interpretation {
+    repeated int32 variable = 1;
+}
