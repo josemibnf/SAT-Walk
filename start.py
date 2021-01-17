@@ -1,22 +1,28 @@
-from flask import Flask, request, send_file
-import io
+import grpc, time
+from concurrent import futures
 import walksat
-from api_pb2 import Cnf
+from api_pb2 import Interpretation
+import api_pb2_grpc
 
-app = Flask(__name__)
+class Solver(api_pb2_grpc.Solver):
+    def Solve(self, request, context):
+        return walksat.ok( cnf = request)
 
-if __name__ == "__main__":
+# create a gRPC server
+server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
 
-    @app.route('/', methods=['GET', 'POST'])
-    def post():
-        cnf = Cnf()
-        cnf.ParseFromString(request.data)
-        solution = walksat.ok(cnf=cnf)
-        return send_file(
-            io.BytesIO(solution.SerializeToString()),
-            as_attachment=True,
-            attachment_filename='abc.abc',
-            mimetype='attachment/x-protobuf'
-        )
+api_pb2_grpc.add_SolverServicer_to_server(
+    Solver(), server=server
+)
 
-    app.run(host='0.0.0.0', port=8080)
+print('Starting server. Listening on port 8080.')
+server.add_insecure_port('[::]:8080')
+server.start()
+
+# since server.start() will not block,
+# a sleep-loop is added to keep alive
+try:
+    while True:
+        time.sleep(86400)
+except KeyboardInterrupt:
+    server.stop(0)

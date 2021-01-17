@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package api;
-
 message Clause {
     repeated int32 literal = 1;
 }
@@ -12,4 +10,9 @@ message Cnf {
 
 message Interpretation {
     repeated int32 variable = 1;
+}
+
+service Solver {
+    // port 8080
+    rpc Solve(Cnf) returns (Interpretation) {}
 }
