@@ -1,0 +1,6 @@
+  
+{
+    "api": [{"port":8080, "protocol":["http2","grpc"]}],
+    "architecture": "armv8",
+    "entrypoint": "python3 /walk/start.py"
+}
